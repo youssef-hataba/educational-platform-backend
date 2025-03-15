@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document, Model, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 
-enum UserRole {
+export enum UserRole {
   STUDENT = "student",
   INSTRUCTOR = "instructor",
   ADMIN = "admin",
@@ -15,6 +15,8 @@ interface IUser extends Document {
   role: UserRole;
   enrolledCourses: Types.ObjectId[];
   fullName: string;
+  isActive:boolean;
+  deactivatedAt: Date;
   comparePassword(candidatePassword: string, userPassword: string): Promise<boolean>;
 }
 
@@ -34,6 +36,8 @@ const userSchema: Schema<IUser> = new Schema(
     password: { type: String, required: true, minlength: 6 },
     role: { type: String, enum: Object.values(UserRole), default: UserRole.STUDENT },
     enrolledCourses: [{ type: Types.ObjectId, ref: "Course" }],
+    isActive: { type: Boolean, default: true },
+    deactivatedAt: { type: Date, default: null },
   },
   { timestamps: true }
 );
