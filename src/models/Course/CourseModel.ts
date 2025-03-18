@@ -49,8 +49,7 @@ const CourseSchema: Schema = new Schema<ICourse>(
     duration: { type: Number, required: true },
     tags: [{ type: String }],
     thumbnail: { type: String, required: true },
-    rating: { type: Number, default: 0 },
-    totalRatings: { type: Number, default: 0 },
+    rating: { type: Number, default: 0 }
   },
   { timestamps: true }
 );
