@@ -8,7 +8,7 @@ export interface ICourse extends Document {
   reviews: mongoose.Types.ObjectId[];
   price: number;
   category: string;
-  language: string;
+  language: string[];
   requirements: string[];
   whatYouWillLearn: string[];
   duration: number;
@@ -43,7 +43,7 @@ const CourseSchema: Schema = new Schema<ICourse>(
     ],
     price: { type: Number, required: true, default: 0 },
     category: { type: String, required: true },
-    language: { type: String, required: true, default: "English" },
+    language: [{ type: String, required: true, default: "English" }],
     requirements: [{ type: String }],
     whatYouWillLearn: [{ type: String }],
     duration: { type: Number, required: true },
