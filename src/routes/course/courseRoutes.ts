@@ -1,5 +1,5 @@
 import express from "express";
-import { protect, checkAdmin } from "../../middlewares/authMiddleware";
+import { protect, checkAdmin ,checkInstuctor} from "../../middlewares/authMiddleware";
 import {
   createCourse,
   getAllCourses,
@@ -23,11 +23,11 @@ router.use(protect);
 // router.get("/my-courses", getEnrolledCourses);
 
 // Instructor & Admin Routes
-router.post("/", createCourse);
-router.patch("/:id", updateCourse);
-router.delete("/:id", deleteCourse);
+router.post("/",checkInstuctor, createCourse);
+router.patch("/:id",checkInstuctor, updateCourse);
+router.delete("/:id",checkInstuctor , deleteCourse);
 
 
-router.get("/instructor/:instructorId", getInstructorCourses);
+router.get("/instructor/:instructorId",checkInstuctor, getInstructorCourses);
 
 export default router;

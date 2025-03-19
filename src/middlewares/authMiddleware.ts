@@ -43,3 +43,15 @@ export const checkAdmin = asyncHandler(async (req: AuthRequest, res: Response,ne
 
   next();
 });
+
+export const checkInstuctor = asyncHandler(async (req: AuthRequest, res: Response,next:NextFunction) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Not authorized, no user found" });
+  }
+
+  if (req.user.role !== UserRole.INSTRUCTOR) {
+    return res.status(403).json({ message: "Access denied, Instructor only" });
+  }
+
+  next();
+});
