@@ -7,6 +7,7 @@ import errorHandler from "./middlewares/errorHandler";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import courseRoutes from "./routes/course/courseRoutes"
+import sectionRoutes from "./routes/course/sectionRoutes"
 
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users",userRoutes);
 app.use("/api/courses",courseRoutes);
+app.use("/api/sections",sectionRoutes);
 
 app.get("/",(req,res)=>{
   res.send("Hello, World! Server is running 🟢");
