@@ -8,6 +8,7 @@ import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import courseRoutes from "./routes/course/courseRoutes"
 import sectionRoutes from "./routes/course/sectionRoutes"
+import lessonRoutes from "./routes/course/lessonRoutes"
 
 
 dotenv.config();
@@ -23,6 +24,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users",userRoutes);
 app.use("/api/courses",courseRoutes);
 app.use("/api/sections",sectionRoutes);
+app.use("/api/lessons",lessonRoutes);
 
 app.get("/",(req,res)=>{
   res.send("Hello, World! Server is running 🟢");
