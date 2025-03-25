@@ -23,7 +23,7 @@ export const createSection = asyncHandler(async (req: AuthRequest, res: Response
     throw new AppError("Not authorized to add sections to this course", 403);
   }
 
-  const section = await Section.create({ title, description, course: courseId });
+  const section = await Section.create({ title, description, course: courseId, instructor: req.user.id });
   course.sections.push(section.id);
   await course.save();
 

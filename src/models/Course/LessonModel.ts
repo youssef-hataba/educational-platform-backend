@@ -7,7 +7,8 @@ export interface ILesson extends Document {
   duration: number; // in minutes
   attachments?: string[];
   quiz?: mongoose.Types.ObjectId;
-  section:mongoose.Types.ObjectId;
+  section: mongoose.Types.ObjectId;
+  instructor: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,7 +20,12 @@ const LessonSchema: Schema = new Schema<ILesson>(
     duration: { type: Number, required: true },
     attachments: [{ type: String }],
     section: { type: mongoose.Schema.Types.ObjectId, ref: "Section", required: true },
-    quiz:{ type: mongoose.Schema.Types.ObjectId, ref: "Attachment" }
+    quiz: { type: mongoose.Schema.Types.ObjectId, ref: "Attachment" },
+    instructor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );
