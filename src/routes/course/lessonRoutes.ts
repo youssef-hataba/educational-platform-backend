@@ -1,5 +1,5 @@
 import express from "express";
-import { protect, checkInstuctor } from "../../middlewares/authMiddleware";
+import { protect, checkInstructor } from "../../middlewares/authMiddleware";
 import { createLesson, updateLesson, deleteLesson, getLessonsInSection, getLessonById } from "../../controllers/course/lessonController";
 const router = express.Router();
 
@@ -9,7 +9,7 @@ router.get("/section/:sectionId", getLessonsInSection);
 
 router.get("/:id", protect, getLessonById)
 
-router.use(protect, checkInstuctor);
+router.use(protect, checkInstructor);
 
 router.post("/", createLesson);
 

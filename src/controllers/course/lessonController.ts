@@ -12,19 +12,21 @@ interface AuthRequest extends Request {
 export const createLesson = asyncHandler(async (req: AuthRequest, res: Response) => {
   const { title, videoUrl, duration, attachments, sectionId, quiz } = req.body;
 
-  const section = await Section.findById(sectionId).populate("course", "instructor");
+  const section = await Section.findById(sectionId);
   if (!section) throw new AppError("Section not found", 404);
 
-  if ((section.course as any).instructor.toString() !== req.user.id) {
+
+  if (section.instructor.toString() !== req.user.id) {
     throw new AppError("Not authorized to add lessons to this course", 403);
   }
 
   const lesson = await Lesson.create({
+    section: sectionId,
+    instructor: req.user.id,
     title,
     videoUrl,
     duration,
     attachments,
-    section: sectionId,
     quiz,
   });
 

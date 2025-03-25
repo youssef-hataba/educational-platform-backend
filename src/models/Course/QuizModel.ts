@@ -8,6 +8,7 @@ export interface IQuestion {
 
 export interface IQuiz extends Document {
   lesson: mongoose.Types.ObjectId;
+  instructor: mongoose.Types.ObjectId;
   title: string;
   questions: IQuestion[];
   timeLimit?: number;
@@ -18,6 +19,11 @@ export interface IQuiz extends Document {
 const QuizSchema: Schema = new Schema<IQuiz>(
   {
     lesson: { type: mongoose.Schema.Types.ObjectId, ref: "Lesson", required: true },
+    instructor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     title: { type: String, required: true },
     questions: [
       {
@@ -27,10 +33,17 @@ const QuizSchema: Schema = new Schema<IQuiz>(
       },
     ],
     timeLimit: { type: Number, default: null },
-    passingScore: { type: Number, required: true, min: 0, max: 100 },
+    passingScore: { type: Number, min: 0, max: 100 },
   },
   { timestamps: true }
 );
+
+QuizSchema.pre<IQuiz>("save", function (next) {
+  if (!this.passingScore) {
+    this.passingScore = Math.ceil(this.questions.length / 2);
+  }
+  next();
+});
 
 const Quiz = mongoose.model<IQuiz>("Quiz", QuizSchema);
 export default Quiz;

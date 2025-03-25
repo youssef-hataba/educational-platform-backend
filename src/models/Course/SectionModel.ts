@@ -4,6 +4,7 @@ export interface ISection extends Document {
   title: string;
   description?: string;
   course: mongoose.Types.ObjectId;
+  instructor: mongoose.Types.ObjectId;
   lessons: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
@@ -15,6 +16,11 @@ const SectionSchema: Schema = new Schema<ISection>(
     description: { type: String },
     course: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
     lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: "Lesson" }],
+    instructor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );
