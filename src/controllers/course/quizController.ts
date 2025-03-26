@@ -29,57 +29,53 @@ export const createQuiz = asyncHandler(async (req: AuthRequest, res: Response) =
     passingScore
   });
 
+  await lesson.save();
+
   res.status(201).json({ success: true, message: "Quiz created successfully", quiz });
 });
 
 // ✅ Update a Quiz
-// export const updateQuiz = asyncHandler(async (req: AuthRequest, res: Response) => {
-//   const { title, questions, timeLimit } = req.body;
-//   const quiz = await Quiz.findById(req.params.quizId).populate("lesson");
+export const updateQuiz = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { title, questions, timeLimit, passingScore } = req.body;
+  const quiz = await Quiz.findById(req.params.id);
 
-//   if (!quiz) throw new AppError("Quiz not found", 404);
+  if (!quiz) throw new AppError("Quiz not found", 404);
 
-//   // Ensure only the course instructor can update
-//   if ((quiz.lesson as any).section.course.instructor.toString() !== req.user.id) {
-//     throw new AppError("Not authorized to update this quiz", 403);
-//   }
 
-//   Object.assign(quiz, { title, questions, timeLimit });
-//   await quiz.save();
+  if (quiz.instructor.toString() !== req.user.id) {
+    throw new AppError("Not authorized to update this quiz", 403);
+  }
 
-//   res.status(200).json({ success: true, message: "Quiz updated successfully", quiz });
-// });
+  Object.assign(quiz, { title, questions, timeLimit, passingScore });
+  await quiz.save();
 
-// // ✅ Delete a Quiz
-// export const deleteQuiz = asyncHandler(async (req: AuthRequest, res: Response) => {
-//   const quiz = await Quiz.findById(req.params.quizId).populate("lesson");
+  res.status(200).json({ success: true, message: "Quiz updated successfully", quiz });
+});
 
-//   if (!quiz) throw new AppError("Quiz not found", 404);
+// ✅ Delete a Quiz
+export const deleteQuiz = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const quiz = await Quiz.findById(req.params.id);
 
-//   if ((quiz.lesson as any).section.course.instructor.toString() !== req.user.id) {
-//     throw new AppError("Not authorized to delete this quiz", 403);
-//   }
+  if (!quiz) throw new AppError("Quiz not found", 404);
 
-//   await quiz.deleteOne();
+  if (quiz.instructor.toString() !== req.user.id) {
+    throw new AppError("Not authorized to delete this quiz", 403);
+  }
 
-//   res.status(200).json({ success: true, message: "Quiz deleted successfully" });
-// });
+  await quiz.deleteOne();
 
-// // ✅ Get a Single Quiz
-// export const getQuizById = asyncHandler(async (req: Request, res: Response) => {
-//   const quiz = await Quiz.findById(req.params.quizId).populate("lesson", "title");
-//   if (!quiz) throw new AppError("Quiz not found", 404);
+  res.status(200).json({ success: true, message: "Quiz deleted successfully" });
+});
 
-//   res.status(200).json({ success: true, quiz });
-// });
+// ✅ Get a Single Quiz By ID
+export const getQuizById = asyncHandler(async (req: Request, res: Response) => {
+  const quiz = await Quiz.findById(req.params.id)
+  if (!quiz) throw new AppError("Quiz not found", 404);
 
-// // ✅ Get All Quizzes for a Lesson
-// export const getQuizzesForLesson = asyncHandler(async (req: Request, res: Response) => {
-//   const quizzes = await Quiz.find({ lesson: req.params.lessonId });
-//   res.status(200).json({ success: true, count: quizzes.length, quizzes });
-// });
+  res.status(200).json({ success: true, quiz });
+});
 
-// // ✅ Submit Quiz and Calculate Score
+// ✅ Submit Quiz and Calculate Score
 // export const submitQuiz = asyncHandler(async (req: AuthRequest, res: Response) => {
 //   const { quizId } = req.params;
 //   const { answers } = req.body; // { "questionId": "selectedOption" }

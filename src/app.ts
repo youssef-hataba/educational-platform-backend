@@ -9,7 +9,9 @@ import userRoutes from "./routes/userRoutes";
 import courseRoutes from "./routes/course/courseRoutes"
 import sectionRoutes from "./routes/course/sectionRoutes"
 import lessonRoutes from "./routes/course/lessonRoutes"
-import quizRoutes from "./routes/course/quizRoutes"
+import quizRoutes from "./routes/course/quizRoutes";
+import enrollmentRoutes from "./routes/enrollmentRoutes";
+
 
 
 dotenv.config();
@@ -27,6 +29,7 @@ app.use("/api/courses",courseRoutes);
 app.use("/api/sections",sectionRoutes);
 app.use("/api/lessons",lessonRoutes);
 app.use("/api/quiz",quizRoutes);
+app.use("/api/enrollments",enrollmentRoutes);
 
 app.get("/",(req,res)=>{
   res.send("Hello, World! Server is running 🟢");
