@@ -66,7 +66,11 @@ export const deleteSection = asyncHandler(async (req: AuthRequest, res: Response
     throw new AppError("Not authorized to delete this section", 403);
   }
 
-  await section.deleteOne();
+  course.sections = course.sections.filter(
+    (secId) => secId.toString() !== section.id
+  );
+
+  await Promise.all([section.deleteOne(), course.save()]);
 
   res.status(200).json({ success: true, message: "Section deleted successfully" });
 });

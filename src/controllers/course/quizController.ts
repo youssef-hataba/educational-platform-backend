@@ -29,6 +29,8 @@ export const createQuiz = asyncHandler(async (req: AuthRequest, res: Response) =
     passingScore
   });
 
+  await lesson.save();
+
   res.status(201).json({ success: true, message: "Quiz created successfully", quiz });
 });
 
