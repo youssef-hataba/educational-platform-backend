@@ -11,6 +11,7 @@ import sectionRoutes from "./routes/course/sectionRoutes"
 import lessonRoutes from "./routes/course/lessonRoutes"
 import quizRoutes from "./routes/course/quizRoutes";
 import enrollmentRoutes from "./routes/enrollmentRoutes";
+import uploadRoutes from "./routes/uploadRoutes"
 
 
 
@@ -24,14 +25,15 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
-app.use("/api/users",userRoutes);
-app.use("/api/courses",courseRoutes);
-app.use("/api/sections",sectionRoutes);
-app.use("/api/lessons",lessonRoutes);
-app.use("/api/quiz",quizRoutes);
-app.use("/api/enrollments",enrollmentRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/sections", sectionRoutes);
+app.use("/api/lessons", lessonRoutes);
+app.use("/api/quiz", quizRoutes);
+app.use("/api/enrollments", enrollmentRoutes);
+app.use("/api/uploads", uploadRoutes);
 
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
   res.send("Hello, World! Server is running 🟢");
 });
 
