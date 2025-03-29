@@ -5,7 +5,6 @@ import {
   getAllCourses,
   getCourseById,
   updateCourse,
-  deleteCourse,
   getInstructorCourses,
   // enrollInCourse,
   // getEnrolledCourses,
@@ -25,7 +24,6 @@ router.use(protect);
 // Instructor & Admin Routes
 router.post("/",checkInstructor, createCourse);
 router.patch("/:id",checkInstructor, updateCourse);
-router.delete("/:id",checkInstructor , deleteCourse);
 
 
 router.get("/instructor/:instructorId",checkInstructor, getInstructorCourses);

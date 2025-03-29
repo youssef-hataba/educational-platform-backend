@@ -3,6 +3,7 @@ import asyncHandler from "../../middlewares/asyncHandler";
 import Lesson from "../../models/Course/LessonModel";
 import Section from "../../models/Course/SectionModel";
 import AppError from "../../utils/AppError";
+import Quiz from "../../models/Course/QuizModel";
 
 interface AuthRequest extends Request {
   user?: any;
@@ -55,16 +56,18 @@ export const updateLesson = asyncHandler(async (req: AuthRequest, res: Response)
 
 // ✅ Delete Lesson
 export const deleteLesson = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const lesson = await Lesson.findById(req.params.id).populate("course", "instructor");
+  const lesson = await Lesson.findById(req.params.id);
 
   if (!lesson) throw new AppError("Lesson not found", 404);
 
-  if ((lesson.section as any).course.instructor.toString() !== req.user.id) {
+  if (lesson.instructor.toString() !== req.user.id) {
     throw new AppError("Not authorized to delete this lesson", 403);
   }
 
   // Remove lesson from the section
   await Section.findByIdAndUpdate(lesson.section, { $pull: { lessons: lesson._id } });
+
+  await Quiz.deleteOne({ _id: lesson.quiz });
 
   await lesson.deleteOne();
 

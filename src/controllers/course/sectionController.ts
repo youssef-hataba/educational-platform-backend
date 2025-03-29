@@ -3,6 +3,8 @@ import asyncHandler from "../../middlewares/asyncHandler";
 import AppError from "../../utils/AppError";
 import Section from "../../models/Course/SectionModel";
 import Course from "../../models/Course/CourseModel";
+import Lesson from "../../models/Course/LessonModel";
+import Quiz from "../../models/Course/QuizModel";
 
 interface AuthRequest extends Request {
   user?: any;
@@ -66,8 +68,16 @@ export const deleteSection = asyncHandler(async (req: AuthRequest, res: Response
     throw new AppError("Not authorized to delete this section", 403);
   }
 
+  const lessons = await Lesson.find({section:section.id});
+  
+  const quizIds = lessons.map(lesson => lesson.quiz).filter(quiz => quiz);  
+  
+  await Quiz.deleteMany({ _id: { $in: quizIds } });
+  
+  await Lesson.deleteMany({ section: section.id });
+  
+  
   await Course.findByIdAndUpdate(section.course, { $pull: { sections: section._id } });
-
 
   await section.deleteOne();
 

@@ -20,6 +20,11 @@ export const createQuiz = asyncHandler(async (req: AuthRequest, res: Response) =
     throw new AppError("Not authorized to create a quiz for this lesson", 403);
   }
 
+  if (lesson.quiz) {
+    throw new AppError("This lesson already has a quiz", 400);
+  }
+
+
   const quiz = await Quiz.create({
     lesson: lessonId,
     instructor: req.user.id,
@@ -29,6 +34,7 @@ export const createQuiz = asyncHandler(async (req: AuthRequest, res: Response) =
     passingScore
   });
 
+  lesson.quiz = quiz.id;
   await lesson.save();
 
   res.status(201).json({ success: true, message: "Quiz created successfully", quiz });
@@ -62,7 +68,7 @@ export const deleteQuiz = asyncHandler(async (req: AuthRequest, res: Response) =
     throw new AppError("Not authorized to delete this quiz", 403);
   }
 
-  //await Lesson.findByIdAndUpdate(quiz.lesson, { $pull: { quiz: quiz._id } });
+  await Lesson.findByIdAndUpdate(quiz.lesson, { quiz:null } );
 
   await quiz.deleteOne();
 

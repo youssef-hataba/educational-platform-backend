@@ -71,23 +71,6 @@ export const updateCourse = asyncHandler(async (req: AuthRequest, res: Response)
   res.status(200).json({ success: true, course });
 });
 
-// @desc    Delete a course
-// @route   DELETE /api/courses/:id
-// @access  Private (Instructor only)
-export const deleteCourse = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const course = await Course.findById(req.params.id);
-
-  if (!course) {
-    throw new AppError("Course not found", 404);
-  }
-
-  if (course.instructor.toString() !== req.user.id) {
-    throw new AppError("Not authorized to delete this course", 403);
-  }
-
-  await course.deleteOne();
-  res.status(200).json({ success: true, message: "Course deleted successfully" });
-});
 
 // @desc    Publish a course
 // @route   PATCH /api/courses/:id/publish
