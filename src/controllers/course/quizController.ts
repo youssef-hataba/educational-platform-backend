@@ -62,6 +62,8 @@ export const deleteQuiz = asyncHandler(async (req: AuthRequest, res: Response) =
     throw new AppError("Not authorized to delete this quiz", 403);
   }
 
+  //await Lesson.findByIdAndUpdate(quiz.lesson, { $pull: { quiz: quiz._id } });
+
   await quiz.deleteOne();
 
   res.status(200).json({ success: true, message: "Quiz deleted successfully" });

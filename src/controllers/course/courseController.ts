@@ -31,7 +31,7 @@ export const createCourse = asyncHandler(async (req: AuthRequest, res: Response)
 
 
 export const getAllCourses = asyncHandler(async (req: Request, res: Response) => {
-  const courses = await Course.find().populate("instructor", "firstName lastName email");
+  const courses = await Course.find().populate("instructor", "firstName lastName");
   res.status(200).json({
     success: true,
     length: courses.length,
@@ -42,7 +42,7 @@ export const getAllCourses = asyncHandler(async (req: Request, res: Response) =>
 //@route GET /api/courses/:id  (Public Routes)
 export const getCourseById = asyncHandler(async (req: Request, res: Response) => {
   const course = await Course.findById(req.params.id)
-  .populate("instructor", "fistName lastName email")
+  .populate("instructor", "fistName lastName")
   .populate("sections");
 
   if (!course) {
