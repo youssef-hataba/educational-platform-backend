@@ -42,18 +42,31 @@ export const createQuiz = asyncHandler(async (req: AuthRequest, res: Response) =
 
 // ✅ Update a Quiz
 export const updateQuiz = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { title, questions, timeLimit, passingScore } = req.body;
-  const quiz = await Quiz.findById(req.params.id);
+  const allowedUpdates = ["title", "questions", "timeLimit", "passingScore"];
 
-  if (!quiz) throw new AppError("Quiz not found", 404);
+  const updates = Object.keys(req.body).reduce((acc, key) => {
+    if (allowedUpdates.includes(key)) {
+      acc[key] = req.body[key];
+    }
+    return acc;
+  }, {} as Record<string, any>);
 
 
-  if (quiz.instructor.toString() !== req.user.id) {
-    throw new AppError("Not authorized to update this quiz", 403);
+  if (Object.keys(updates).length === 0) {
+    throw new AppError("No valid fields provided for update", 400);
   }
 
-  Object.assign(quiz, { title, questions, timeLimit, passingScore });
-  await quiz.save();
+
+  const quiz = await Quiz.findOneAndUpdate(
+    {
+      _id: req.params.id,
+      instructor: req.user.id
+    },
+    { $set: updates },
+    { new: true, runValidators: true }
+  );
+
+  if (!quiz) throw new AppError("Quiz not found or not authorized", 404);
 
   res.status(200).json({ success: true, message: "Quiz updated successfully", quiz });
 });
@@ -68,7 +81,7 @@ export const deleteQuiz = asyncHandler(async (req: AuthRequest, res: Response) =
     throw new AppError("Not authorized to delete this quiz", 403);
   }
 
-  await Lesson.findByIdAndUpdate(quiz.lesson, { quiz:null } );
+  await Lesson.findByIdAndUpdate(quiz.lesson, { quiz: null });
 
   await quiz.deleteOne();
 
