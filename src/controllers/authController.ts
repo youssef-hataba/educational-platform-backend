@@ -49,13 +49,13 @@ export const login = asyncHandler(async (req: Request, res: Response, next: Next
   }
 
   const user = await User.findOne({ email });
-  if (!user) {
+  if (!user || !(await user.comparePassword(password, user.password))) {
     return next(new AppError("Invalid email or password", 401));
   }
 
-  const isMatch = await user.comparePassword(password, user.password);
-  if (!isMatch) {
-    return next(new AppError("Invalid email or password", 401));
+  if (!user.isActive) {
+    user.isActive = true;
+    await user.save({ validateBeforeSave: false });
   }
 
   const token = generateToken(user.id);
