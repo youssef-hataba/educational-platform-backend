@@ -8,7 +8,7 @@ interface AuthRequest extends Request {
 };
 
 export const createCourse = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { title, description, price, category, tags, thumbnail, duration, requirements, whatYouWillLearn, language, rating } = req.body;
+  const { title, description, price, category, tags, thumbnail, requirements, whatYouWillLearn, language} = req.body;
   const instructorId = req.user.id;
 
   const course = await Course.create({
@@ -16,13 +16,11 @@ export const createCourse = asyncHandler(async (req: AuthRequest, res: Response)
     description,
     price,
     category,
-    duration,
     tags,
     thumbnail,
     requirements,
     whatYouWillLearn,
     language,
-    rating,
     instructor: instructorId,
   });
 
@@ -42,8 +40,8 @@ export const getAllCourses = asyncHandler(async (req: Request, res: Response) =>
 //@route GET /api/courses/:id  (Public Routes)
 export const getCourseById = asyncHandler(async (req: Request, res: Response) => {
   const course = await Course.findById(req.params.id)
-  .populate("instructor", "fistName lastName")
-  .populate("sections");
+    .populate("instructor", "fistName lastName profilePic")
+    .populate("sections");
 
   if (!course) {
     throw new AppError("Course not found", 404);
@@ -56,21 +54,45 @@ export const getCourseById = asyncHandler(async (req: Request, res: Response) =>
 // @route   PATCH /api/courses/:id
 // @access  Private (Instructor only)
 export const updateCourse = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const allowedUpdates = [
+    "title",
+    "description",
+    "price",
+    "category",
+    "language",
+    "requirements",
+    "whatYouWillLearn",
+    "tags",
+    "thumbnail"
+  ];
+
+  const updates = Object.keys(req.body).reduce((acc, key) => {
+    if (allowedUpdates.includes(key)) {
+      acc[key] = req.body[key];
+    }
+    return acc;
+  }, {} as Record<string, any>);
+
+
+  if (Object.keys(updates).length === 0) {
+    throw new AppError("No valid fields provided for update", 400);
+  }
+
   const course = await Course.findOneAndUpdate(
     {
       _id: req.params.id,
       instructor: req.user.id
     },
-    { $set: req.body },
+    { $set: updates },
     { new: true, runValidators: true }
   );
+
   if (!course) {
     throw new AppError("Course not found or not authorized", 404);
   }
 
   res.status(200).json({ success: true, course });
 });
-
 
 // @desc    Publish a course
 // @route   PATCH /api/courses/:id/publish

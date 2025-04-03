@@ -14,6 +14,7 @@ interface IUser extends Document {
   password: string;
   role: UserRole;
   enrolledCourses: Types.ObjectId[];
+  profilePic: string;
   fullName: string;
   isActive:boolean;
   deactivatedAt: Date;
@@ -35,6 +36,7 @@ const userSchema: Schema<IUser> = new Schema(
     },
     password: { type: String, required: true, minlength: 6 },
     role: { type: String, enum: Object.values(UserRole), default: UserRole.STUDENT },
+    profilePic: { type: String },
     enrolledCourses: [{ type: Types.ObjectId, ref: "Course" }],
     isActive: { type: Boolean, default: true },
     deactivatedAt: { type: Date, default: null },

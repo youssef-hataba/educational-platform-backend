@@ -11,7 +11,7 @@ interface AuthRequest extends Request {
 
 // ✅ Create Lesson
 export const createLesson = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { title, videoUrl, duration, attachments, sectionId, quiz } = req.body;
+  const { title, videoUrl, duration, attachments, sectionId } = req.body;
 
   const section = await Section.findById(sectionId);
   if (!section) throw new AppError("Section not found", 404);
@@ -28,7 +28,6 @@ export const createLesson = asyncHandler(async (req: AuthRequest, res: Response)
     videoUrl,
     duration,
     attachments,
-    quiz,
   });
 
   section.lessons.push(lesson.id);
@@ -39,17 +38,31 @@ export const createLesson = asyncHandler(async (req: AuthRequest, res: Response)
 
 // ✅ Update Lesson
 export const updateLesson = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { title, videoUrl, duration, attachments, quiz } = req.body;
-  const lesson = await Lesson.findById(req.params.id).populate("course", "instructor");
+  const allowedUpdates = ["title", "videoUrl", "duration", "attachments", "quiz"];
 
-  if (!lesson) throw new AppError("Lesson not found", 404);
+  const updates = Object.keys(req.body).reduce((acc, key) => {
+    if (allowedUpdates.includes(key)) {
+      acc[key] = req.body[key];
+    }
+    return acc;
+  }, {} as Record<string, any>);
 
-  if ((lesson.section as any).course.instructor.toString() !== req.user.id) {
-    throw new AppError("Not authorized to update this lesson", 403);
+  if (Object.keys(updates).length === 0) {
+    throw new AppError("No valid fields provided for update", 400);
   }
 
-  Object.assign(lesson, { title, videoUrl, duration, attachments, quiz });
-  await lesson.save();
+  const lesson = await Lesson.findOneAndUpdate(
+    {
+      _id: req.params.id,
+      instructor: req.user.id
+    },
+    { $set: updates },
+    { new: true, runValidators: true }
+  );
+
+  if (!lesson) {
+    throw new AppError("Lesson not found or not authorized", 404);
+  }
 
   res.status(200).json({ success: true, message: "Lesson updated successfully", lesson });
 });

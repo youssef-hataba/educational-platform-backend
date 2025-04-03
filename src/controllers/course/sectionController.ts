@@ -43,7 +43,10 @@ export const updateSection = asyncHandler(async (req: AuthRequest, res: Response
   }
 
   const course = await Course.findById(section.course);
-  if (!course || course.instructor.toString() !== req.user.id) {
+
+  if (!course) throw new AppError("Course Not Found!", 404);
+
+  if (course.instructor.toString() !== req.user.id) {
     throw new AppError("Not authorized to update this section", 403);
   }
 
@@ -64,19 +67,22 @@ export const deleteSection = asyncHandler(async (req: AuthRequest, res: Response
   }
 
   const course = await Course.findById(section.course);
-  if (!course || course.instructor.toString() !== req.user.id) {
+
+  if(!course) throw new AppError("Course Not Found!",404);
+
+  if(course.instructor.toString() !== req.user.id) {
     throw new AppError("Not authorized to delete this section", 403);
   }
 
-  const lessons = await Lesson.find({section:section.id});
-  
-  const quizIds = lessons.map(lesson => lesson.quiz).filter(quiz => quiz);  
-  
+  const lessons = await Lesson.find({ section: section.id });
+
+  const quizIds = lessons.map(lesson => lesson.quiz).filter(quiz => quiz);
+
   await Quiz.deleteMany({ _id: { $in: quizIds } });
-  
+
   await Lesson.deleteMany({ section: section.id });
-  
-  
+
+
   await Course.findByIdAndUpdate(section.course, { $pull: { sections: section._id } });
 
   await section.deleteOne();
