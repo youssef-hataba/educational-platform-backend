@@ -9,7 +9,7 @@ interface AuthRequest extends Request {
 
 
 export const getUserProfile = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const user = await User.findById(req.user.id).select("-password -deactivatedAt");
+  const user = await User.findById(req.user.id).select("firstName lastName email enrolledCourses profilePic");
   if (!user) {
     throw new AppError("User not found", 404);
   }
@@ -59,8 +59,8 @@ export const deactivateAccount = asyncHandler(async (req: AuthRequest, res: Resp
     throw new AppError("Your account is already deactivated.", 400);
   }
 
-  user.isActive = false; // Mark user as inactive
-  user.deactivatedAt = new Date(); // Store the deactivation date
+  user.isActive = false;
+  user.deactivatedAt = new Date();
   await user.save();
 
   res.status(200).json({ message: "Your account has been deactivated." });
