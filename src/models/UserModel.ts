@@ -13,10 +13,12 @@ interface IUser extends Document {
   email: string;
   password: string;
   role: UserRole;
-  enrolledCourses: Types.ObjectId[];
+  aboutMe?: string;
+  myCourses?: mongoose.Types.ObjectId[];
+  enrolledCourses: mongoose.Types.ObjectId[];
   profilePic: string;
   fullName: string;
-  isActive:boolean;
+  isActive: boolean;
   deactivatedAt: Date;
   comparePassword(candidatePassword: string, userPassword: string): Promise<boolean>;
 }
@@ -36,8 +38,10 @@ const userSchema: Schema<IUser> = new Schema(
     },
     password: { type: String, required: true, minlength: 6 },
     role: { type: String, enum: Object.values(UserRole), default: UserRole.STUDENT },
+    aboutMe: { type: String },
+    myCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
     profilePic: { type: String },
-    enrolledCourses: [{ type: Types.ObjectId, ref: "Course" }],
+    enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
     isActive: { type: Boolean, default: true },
     deactivatedAt: { type: Date, default: null },
   },

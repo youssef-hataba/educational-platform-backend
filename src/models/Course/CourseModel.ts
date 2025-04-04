@@ -16,6 +16,7 @@ export interface ICourse extends Document {
   thumbnail: string;
   rating: number;
   totalRatings: number;
+  isPublished: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,10 +47,11 @@ const CourseSchema: Schema = new Schema<ICourse>(
     language: [{ type: String, required: true, default: "English" }],
     requirements: [{ type: String }],
     whatYouWillLearn: [{ type: String }],
-    duration: { type: Number, required: true },
+    duration: { type: Number },
     tags: [{ type: String }],
     thumbnail: { type: String, required: true },
-    rating: { type: Number, default: 0 }
+    rating: { type: Number, default: 0 },
+    isPublished: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
