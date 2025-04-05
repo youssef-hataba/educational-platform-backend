@@ -7,8 +7,9 @@ interface AuthRequest extends Request {
   user?: any;
 };
 
+
 export const createCourse = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { title, description, price, category, tags, thumbnail, requirements, whatYouWillLearn, language} = req.body;
+  const { title, description, price, category, tags, thumbnail, requirements, whatYouWillLearn, language } = req.body;
   const instructorId = req.user.id;
 
   const course = await Course.create({
@@ -28,31 +29,6 @@ export const createCourse = asyncHandler(async (req: AuthRequest, res: Response)
 });
 
 
-export const getAllCourses = asyncHandler(async (req: Request, res: Response) => {
-  const courses = await Course.find().populate("instructor", "firstName lastName");
-  res.status(200).json({
-    success: true,
-    length: courses.length,
-    courses
-  });
-});
-
-//@route GET /api/courses/:id  (Public Routes)
-export const getCourseById = asyncHandler(async (req: Request, res: Response) => {
-  const course = await Course.findById(req.params.id)
-    .populate("instructor", "fistName lastName profilePic")
-    .populate("sections");
-
-  if (!course) {
-    throw new AppError("Course not found", 404);
-  }
-
-  res.status(200).json({ success: true, course });
-});
-
-// @desc    Update a course
-// @route   PATCH /api/courses/:id
-// @access  Private (Instructor only)
 export const updateCourse = asyncHandler(async (req: AuthRequest, res: Response) => {
   const allowedUpdates = [
     "title",
@@ -94,30 +70,50 @@ export const updateCourse = asyncHandler(async (req: AuthRequest, res: Response)
   res.status(200).json({ success: true, course });
 });
 
-// @desc    Publish a course
-// @route   PATCH /api/courses/:id/publish
-// @access  Private (Instructor only)
-// export const publishCourse = asyncHandler(async (req: AuthRequest, res: Response) => {
-//   const course = await Course.findById(req.params.id);
 
-//   if (!course) {
-//     throw new AppError("Course not found", 404);
-//   }
+export const getAllCourses = asyncHandler(async (req: Request, res: Response) => {
+  const courses = await Course.find().populate("instructor", "firstName lastName");
+  res.status(200).json({
+    success: true,
+    length: courses.length,
+    courses
+  });
+});
 
-//   if (course.instructor.toString() !== req.user.id) {
-//     throw new AppError("Not authorized to publish this course", 403);
-//   }
+export const getCourseById = asyncHandler(async (req: Request, res: Response) => {
+  const course = await Course.findById(req.params.id)
+    .populate("instructor", "fistName lastName profilePic")
+    .populate("sections");
 
-//   course.isPublished = true;
-//   await course.save();
+  if (!course) {
+    throw new AppError("Course not found", 404);
+  }
 
-//   res.status(200).json({ success: true, message: "Course published successfully" });
-// });
+  res.status(200).json({ success: true, course });
+});
 
-// @desc    Get all courses by an instructor
-// @route   GET /api/courses/instructor/:instructorId
-// @access  Private (Instructor only)
+// Get all courses by an instructor
 export const getInstructorCourses = asyncHandler(async (req: Request, res: Response) => {
-  const courses = await Course.find({ instructor: req.params.instructorId });
+  const courses = await Course.find({ instructor: req.params.instructorId, isPublished: true });
   res.status(200).json({ success: true, length: courses.length, courses });
 });
+
+export const publishCourse = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const course = await Course.findById(req.params.id);
+
+  if (!course) {
+    throw new AppError("Course not found", 404);
+  }
+
+  if (course.instructor.toString() !== req.user.id) {
+    throw new AppError("Not authorized to publish this course", 403);
+  }
+
+  if (course.isPublished) return res.status(400).json({ success: false, message: "Course is already published" });
+
+  course.isPublished = true;
+  await course.save();
+
+  res.status(200).json({ success: true, message: "Course published successfully" });
+});
+

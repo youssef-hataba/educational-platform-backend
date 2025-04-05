@@ -6,8 +6,7 @@ import {
   getCourseById,
   updateCourse,
   getInstructorCourses,
-  // enrollInCourse,
-  // getEnrolledCourses,
+  publishCourse,
 } from "../../controllers/course/courseController";
 
 const router = express.Router();
@@ -16,16 +15,14 @@ const router = express.Router();
 router.get("/", getAllCourses);
 router.get("/:id", getCourseById);
 
-// Protected Routes (Only authenticated users)
-router.use(protect);
-// router.post("/:id/enroll", enrollInCourse);
-// router.get("/my-courses", getEnrolledCourses);
+// get instructor courses 
+router.get("/instructor/:instructorId", getInstructorCourses);
 
-// Instructor & Admin Routes
-router.post("/",checkInstructor, createCourse);
-router.patch("/:id",checkInstructor, updateCourse);
+// Instructor Routes
+router.use(protect,checkInstructor);
+router.post("/", createCourse);
+router.patch("/:id", updateCourse);
+router.patch("/publish/:id",publishCourse);
 
-
-router.get("/instructor/:instructorId",checkInstructor, getInstructorCourses);
 
 export default router;
