@@ -3,10 +3,7 @@ import Enrollment from "../models/EnrollmentModle";
 import Course from "../models/Course/CourseModel";
 import AppError from "../utils/AppError";
 import asyncHandler from "../middlewares/asyncHandler";
-
-interface AuthRequest extends Request {
-  user?: any;
-}
+import { AuthRequest } from "../types/authRequest";
 
 // 📌 1️⃣ Enroll a user in a course
 export const enrollInCourse = asyncHandler(async (req: AuthRequest, res: Response) => {

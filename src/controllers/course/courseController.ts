@@ -2,10 +2,7 @@ import { Request, Response } from "express";
 import asyncHandler from "../../middlewares/asyncHandler";
 import Course from "../../models/Course/CourseModel";
 import AppError from "../../utils/AppError";
-
-interface AuthRequest extends Request {
-  user?: any;
-};
+import { AuthRequest } from "../../types/authRequest";
 
 
 export const createCourse = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -27,7 +24,6 @@ export const createCourse = asyncHandler(async (req: AuthRequest, res: Response)
 
   res.status(201).json({ success: true, course });
 });
-
 
 export const updateCourse = asyncHandler(async (req: AuthRequest, res: Response) => {
   const allowedUpdates = [

@@ -4,10 +4,7 @@ import Quiz from "../../models/Course/QuizModel";
 import Lesson from "../../models/Course/LessonModel";
 import Enrollment from "../../models/EnrollmentModle";
 import AppError from "../../utils/AppError";
-
-interface AuthRequest extends Request {
-  user?: any;
-}
+import { AuthRequest } from "../../types/authRequest";
 
 // ✅ Create a Quiz
 export const createQuiz = asyncHandler(async (req: AuthRequest, res: Response) => {

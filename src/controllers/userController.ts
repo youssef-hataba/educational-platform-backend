@@ -2,11 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import User from "../models/UserModel";
 import asyncHandler from "../middlewares/asyncHandler";
 import AppError from "../utils/AppError";
-
-interface AuthRequest extends Request {
-  user?: any;
-};
-
+import { AuthRequest } from "../types/authRequest";
 
 export const getUserProfile = asyncHandler(async (req: AuthRequest, res: Response) => {
   const user = await User.findById(req.user.id).select("firstName lastName email enrolledCourses profilePic");

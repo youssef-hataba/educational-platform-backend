@@ -5,10 +5,7 @@ import Section from "../../models/Course/SectionModel";
 import Course from "../../models/Course/CourseModel";
 import Lesson from "../../models/Course/LessonModel";
 import Quiz from "../../models/Course/QuizModel";
-
-interface AuthRequest extends Request {
-  user?: any;
-};
+import { AuthRequest } from "../../types/authRequest";
 
 // @desc    Create new section
 // @route   POST /api/sections

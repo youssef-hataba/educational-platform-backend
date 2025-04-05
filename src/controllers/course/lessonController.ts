@@ -4,10 +4,7 @@ import Lesson from "../../models/Course/LessonModel";
 import Section from "../../models/Course/SectionModel";
 import AppError from "../../utils/AppError";
 import Quiz from "../../models/Course/QuizModel";
-
-interface AuthRequest extends Request {
-  user?: any;
-};
+import { AuthRequest } from "../../types/authRequest";
 
 // ✅ Create Lesson
 export const createLesson = asyncHandler(async (req: AuthRequest, res: Response) => {

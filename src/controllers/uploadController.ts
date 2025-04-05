@@ -3,11 +3,7 @@ import asyncHandler from "../middlewares/asyncHandler";
 import AppError from "../utils/AppError";
 import User from "../models/UserModel";
 import cloudinary from "../config/cloudinary";
-
-
-interface AuthRequest extends Request {
-  user?: any;
-};
+import { AuthRequest } from "../types/authRequest";
 
 export const uploadThumbnailController = asyncHandler((req: Request, res: Response) => {
   if (!req.file) {
