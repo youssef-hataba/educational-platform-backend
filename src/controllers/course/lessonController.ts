@@ -20,6 +20,7 @@ export const createLesson = asyncHandler(async (req: AuthRequest, res: Response)
 
   const lesson = await Lesson.create({
     section: sectionId,
+    course:section.course,
     instructor: req.user.id,
     title,
     videoUrl,
