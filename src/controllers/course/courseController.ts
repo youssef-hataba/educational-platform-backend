@@ -72,7 +72,7 @@ export const updateCourse = asyncHandler(async (req: AuthRequest, res: Response)
 
 
 export const getAllCourses = asyncHandler(async (req: Request, res: Response) => {
-  const courses = await Course.find().populate("instructor", "firstName lastName");
+  const courses = await Course.find({ isPublished: true }).populate("instructor", "firstName lastName");
   res.status(200).json({
     success: true,
     length: courses.length,
@@ -81,7 +81,7 @@ export const getAllCourses = asyncHandler(async (req: Request, res: Response) =>
 });
 
 export const getCourseById = asyncHandler(async (req: Request, res: Response) => {
-  const course = await Course.findById(req.params.id)
+  const course = await Course.findOne({ _id: req.params.id, isPublished: true })
     .populate("instructor", "fistName lastName profilePic")
     .populate("sections");
 
