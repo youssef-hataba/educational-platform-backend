@@ -53,6 +53,7 @@ export const getUsersInCourse = asyncHandler(async (req: AuthRequest, res: Respo
   });
 });
 
+// mark lesson as completed & calculate progrees 
 export const markLessonCompleted = asyncHandler(async (req: AuthRequest, res: Response) => {
   const lessonId = new mongoose.Types.ObjectId(req.params.lessonId);
   const userId = req.user.id;

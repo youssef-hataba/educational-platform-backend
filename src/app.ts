@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db";
 import errorHandler from "./middlewares/errorHandler";
+import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
@@ -13,15 +14,20 @@ import quizRoutes from "./routes/course/quizRoutes";
 import enrollmentRoutes from "./routes/enrollmentRoutes";
 import uploadRoutes from "./routes/uploadRoutes"
 
-
-
 dotenv.config();
 
 const app = express();
 
 connectDB();
 
-app.use(cors());
+// CORS configuration
+const corsOptions = {
+  origin: "*", // Allow all origins for now
+  credentials: true, // Allow sending cookies
+};
+
+app.use(cors(corsOptions));
+app.use(cookieParser());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);

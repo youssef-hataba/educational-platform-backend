@@ -4,17 +4,11 @@ import User from "../models/UserModel";
 import AppError from "../utils/AppError";
 import asyncHandler from "./asyncHandler";
 import { UserRole } from "../models/UserModel";
+import { AuthRequest } from "../types/authRequest";
 
-interface AuthRequest extends Request {
-  user?: any;
-};
 
 export const protect = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
-  let token;
-  
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-    token = req.headers.authorization.split(" ")[1];
-  }
+  const token = req.cookies.token;
 
   if (!token) {
     throw new AppError("Not authorized, no token provided", 401);

@@ -17,7 +17,7 @@ router.post("/enroll", enrollInCourse);
 // Get user's enrollments (Protected)
 router.get("/my-enrollments", getUserEnrollments);
 
-router.post("/lesson/:lessonId/complete", protect, markLessonCompleted);
+router.post("/lessons/:lessonId/complete", protect, markLessonCompleted);
 
 // Get all users enrolled in a course (Protected, Instructor/Admin)
 router.get("/course/:courseId", checkAdmin, getUsersInCourse);
