@@ -20,6 +20,6 @@ const profilePicStorage = new CloudinaryStorage({
   } as any,
 });
 
-export const uploadProfilePic = multer({ storage: profilePicStorage });
-
 export const uploadThumbnail = multer({ storage: thumbnailStorage });
+
+export const uploadProfilePic = multer({ storage: profilePicStorage });
