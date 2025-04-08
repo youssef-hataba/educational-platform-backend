@@ -22,7 +22,7 @@ connectDB();
 
 // CORS configuration
 const corsOptions = {
-  origin: "*", // Allow all origins for now
+  origin: ['http://localhost:3000', 'https://educational-platform-three.vercel.app'],
   credentials: true, // Allow sending cookies
 };
 
