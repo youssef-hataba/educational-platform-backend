@@ -9,6 +9,7 @@ import { AuthRequest } from "../types/authRequest";
 
 export const protect = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
   const token = req.cookies.token;
+  console.log(req.cookies);
 
   if (!token) {
     throw new AppError("Not authorized, no token provided", 401);

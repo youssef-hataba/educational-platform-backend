@@ -12,10 +12,10 @@ const sendToken = (res: Response, user: any, statusCode: number) => {
 
   const cookieOptions = {
     httpOnly: true,
-    // secure: process.env.NODE_ENV === "production",
-    // sameSite: "strict" as const,//Prevents cookies from being sent in cross-site requests (protects against CSRF)
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-  };
+    secure: process.env.NODE_ENV === "production", 
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  } as any;
 
   res
     .status(statusCode)
