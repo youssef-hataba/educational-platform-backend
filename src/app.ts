@@ -21,12 +21,13 @@ const app = express();
 connectDB();
 
 // CORS configuration
-app.use(
-  cors({
-    origin: ["http://localhost:3000","https://educational-platform-three.vercel.app/"], 
-    credentials: true,
-  })
-);
+app.options("*", cors({
+  origin: [
+    "http://localhost:3000",
+    "https://educational-platform-three.vercel.app"
+  ],
+  credentials: true,
+}));
 
 // app.use(cors(corsOptions));
 app.use(cookieParser());
