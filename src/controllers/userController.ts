@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import User from "../models/UserModel";
+import User from "../models/User/UserModel";
 import asyncHandler from "../middlewares/asyncHandler";
 import AppError from "../utils/AppError";
 import { AuthRequest } from "../types/authRequest";

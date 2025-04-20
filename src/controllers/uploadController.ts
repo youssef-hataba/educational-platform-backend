@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import asyncHandler from "../middlewares/asyncHandler";
 import AppError from "../utils/AppError";
-import User from "../models/UserModel";
+import User from "../models/User/UserModel";
 import cloudinary from "../config/cloudinary";
 import { AuthRequest } from "../types/authRequest";
 

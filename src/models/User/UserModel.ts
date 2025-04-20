@@ -13,8 +13,6 @@ interface IUser extends Document {
   email: string;
   password: string;
   role: UserRole;
-  aboutMe?: string;
-  myCourses?: mongoose.Types.ObjectId[];
   enrolledCourses: mongoose.Types.ObjectId[];
   profilePic: string;
   fullName: string;
@@ -38,14 +36,16 @@ const userSchema: Schema<IUser> = new Schema(
     },
     password: { type: String, required: true, minlength: 6 },
     role: { type: String, enum: Object.values(UserRole), default: UserRole.STUDENT },
-    aboutMe: { type: String },
-    myCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
     profilePic: { type: String },
     enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
     isActive: { type: Boolean, default: true },
     deactivatedAt: { type: Date, default: null },
   },
-  { timestamps: true }
+  {
+    discriminatorKey: "role",
+    collection: "users",
+    timestamps: true
+  }
 );
 
 userSchema.virtual("fullName").get(function (this: IUser) {

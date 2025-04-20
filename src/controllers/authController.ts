@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import User from "../models/UserModel";
+import User from "../models/User/UserModel";
 import jwt from "jsonwebtoken";
 import asyncHandler from "../middlewares/asyncHandler";
 import AppError from "../utils/AppError";
@@ -12,7 +12,7 @@ const sendToken = (res: Response, user: any, statusCode: number) => {
 
   const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", 
+    secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
     maxAge: 30 * 24 * 60 * 60 * 1000,
   } as any;
