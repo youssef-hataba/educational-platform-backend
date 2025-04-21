@@ -6,7 +6,8 @@ import errorHandler from "./middlewares/errorHandler";
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/authRoutes";
-import userRoutes from "./routes/userRoutes";
+import userRoutes from "./routes/user/userRoutes";
+import instructorRoutes from "./routes/user/instructorRoutes";
 import courseRoutes from "./routes/course/courseRoutes"
 import sectionRoutes from "./routes/course/sectionRoutes"
 import lessonRoutes from "./routes/course/lessonRoutes"
@@ -23,12 +24,11 @@ connectDB();
 // CORS configuration
 app.use(
   cors({
-    origin: ["http://localhost:3000","https://educational-platform-three.vercel.app"], 
+    origin: ["http://localhost:3000", "https://educational-platform-three.vercel.app"],
     credentials: true,
   })
 );
 
-// app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 
@@ -40,6 +40,7 @@ app.use("/api/lessons", lessonRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/uploads", uploadRoutes);
+app.use("/api/instructors",instructorRoutes)
 
 app.get("/", (req, res) => {
   res.send("Hello, World! Server is running 🟢");

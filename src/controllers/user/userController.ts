@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import User from "../models/User/UserModel";
-import asyncHandler from "../middlewares/asyncHandler";
-import AppError from "../utils/AppError";
-import { AuthRequest } from "../types/authRequest";
+import User from "../../models/User/UserModel";
+import asyncHandler from "../../middlewares/asyncHandler";
+import AppError from "../../utils/AppError";
+import { AuthRequest } from "../../types/authRequest";
 
 export const getUserProfile = asyncHandler(async (req: AuthRequest, res: Response) => {
+  console.log("User ID:", req.user);
   const user = await User.findById(req.user.id).select("firstName lastName email enrolledCourses profilePic");
   if (!user) {
     throw new AppError("User not found", 404);

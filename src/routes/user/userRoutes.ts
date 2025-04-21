@@ -5,8 +5,8 @@ import {
   getAllUsers,
   deleteUser,
   deactivateAccount,
-} from "../controllers/userController";
-import { checkAdmin, protect } from "../middlewares/authMiddleware";
+} from "../../controllers/user/userController";
+import { checkAdmin, protect } from "../../middlewares/authMiddleware";
 
 const router = express.Router();
 
@@ -21,10 +21,10 @@ router.patch("/profile", protect, updateUserProfile);
 router.patch("/deactivate", protect, deactivateAccount);
 
 // Get all users (Admin Only)
-router.get("/", protect,checkAdmin, getAllUsers);
+router.get("/", protect, checkAdmin, getAllUsers);
 
 // Delete a user (Admin Only)
-router.delete("/:id", protect,checkAdmin, deleteUser);
+router.delete("/:id", protect, checkAdmin, deleteUser);
 
 
 
