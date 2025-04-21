@@ -12,9 +12,6 @@ interface IInstructor {
   title: string;
   bio: string;
   socialLinks: SocialLinks;
-  totalStudents: number;
-  courses: mongoose.Types.ObjectId[];
-  reviews: number;
 }
 
 
@@ -28,9 +25,6 @@ const instructorSchema = new mongoose.Schema<IInstructor>(
       linkedin: { type: String, default: "" },
       youtube: { type: String, default: "" },
     },
-    totalStudents: { type: Number, default: 0 },
-    courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
-    reviews: { type: Number, default: 0 },
   },
   {
     collection: "instructors",
