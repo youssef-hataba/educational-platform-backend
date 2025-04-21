@@ -44,7 +44,9 @@ const userSchema: Schema<IUser> = new Schema(
   {
     discriminatorKey: "role",
     collection: "users",
-    timestamps: true
+    timestamps: true,
+    toJSON:{virtuals:true},
+    toObject:{virtuals:true}
   }
 );
 
