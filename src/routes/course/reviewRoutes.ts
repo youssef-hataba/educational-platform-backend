@@ -1,11 +1,14 @@
 import express from "express";
-import { createReview } from "../../controllers/course/reviewController";
+import { createReview, updateReview } from "../../controllers/course/reviewController";
 import { protect } from "../../middlewares/authMiddleware";
 
 const router = express.Router();
 
+router.use(protect);
 
-router.post("/course/:courseId", protect, createReview);
+router.post("/course/:courseId", createReview);
+
+router.patch("/:reviewId", updateReview);
 
 // router.get("/course/:courseId", getReviewsByCourse);
 

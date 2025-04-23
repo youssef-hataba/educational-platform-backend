@@ -29,9 +29,38 @@ export const createReview = asyncHandler(async (req: AuthRequest, res: Response)
     user: userId,
   })
 
+  // Update the course's average rating and total reviews
   course.totalReviews += 1;
   course.averageRating = (course.averageRating * (course.totalReviews - 1) + rating) / course.totalReviews;
   await course.save();
 
   res.status(201).json({ message: "Review created successfully", review });
 });
+
+export const updateReview = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const { rating, comment } = req.body;
+  const reviewId = req.params.reviewId;
+  const userId = req.user.id;
+
+  const review = await Review.findOne({ _id: reviewId, user: userId });
+  if (!review) {
+    return res.status(404).json({ message: "Review not found or not authorized" });
+  }
+
+  const course = await Course.findById(review.course);
+  if (!course) {
+    return res.status(404).json({ message: "Course not found" });
+  }
+
+  const oldRating = review.rating;
+
+  if (rating) review.rating = rating;
+  if (comment) review.comment = comment;
+  await review.save();
+
+  course.averageRating = (course.averageRating * course.totalReviews - oldRating + review.rating) / course.totalReviews;
+  await course.save();
+
+  res.status(200).json({ message: "Review updated successfully", review });
+});
+
