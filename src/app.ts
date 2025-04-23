@@ -13,7 +13,8 @@ import sectionRoutes from "./routes/course/sectionRoutes"
 import lessonRoutes from "./routes/course/lessonRoutes"
 import quizRoutes from "./routes/course/quizRoutes";
 import enrollmentRoutes from "./routes/enrollmentRoutes";
-import uploadRoutes from "./routes/uploadRoutes"
+import uploadRoutes from "./routes/uploadRoutes";
+import reviewRoutes from "./routes/course/reviewRoutes";
 
 dotenv.config();
 
@@ -40,7 +41,8 @@ app.use("/api/lessons", lessonRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/uploads", uploadRoutes);
-app.use("/api/instructors",instructorRoutes)
+app.use("/api/instructors", instructorRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello, World! Server is running 🟢");

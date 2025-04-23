@@ -5,7 +5,6 @@ export interface ICourse extends Document {
   description: string;
   instructor: mongoose.Types.ObjectId;
   sections: mongoose.Types.ObjectId[];
-  reviews: mongoose.Types.ObjectId[];
   price: number;
   category: string;
   language: string[];
@@ -14,8 +13,8 @@ export interface ICourse extends Document {
   duration: number;
   tags: string[];
   thumbnail: string;
-  rating: number;
-  totalRatings: number;
+  averageRating: number;
+  totalReviews: number;
   isPublished: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -36,12 +35,6 @@ const CourseSchema: Schema = new Schema<ICourse>(
         ref: "Section",
       },
     ],
-    reviews: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Review",
-      },
-    ],
     price: { type: Number, required: true, default: 0 },
     category: { type: String, required: true },
     language: [{ type: String, required: true, default: "English" }],
@@ -50,11 +43,18 @@ const CourseSchema: Schema = new Schema<ICourse>(
     duration: { type: Number },
     tags: [{ type: String }],
     thumbnail: { type: String, required: true },
-    rating: { type: Number, default: 0 },
+    averageRating: { type: Number, default: 0 },
+    totalReviews: { type: Number, default: 0 },
     isPublished: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
+
+CourseSchema.pre(/^find/, function (next) {
+  if ((this as any)._skipIsPublishedCheck) return next();
+  (this as mongoose.Query<any, any>).where({ isPublished: true });
+  next();
+});
 
 const Course = mongoose.model<ICourse>("Course", CourseSchema);
 export default Course;

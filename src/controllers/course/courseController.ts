@@ -50,14 +50,18 @@ export const updateCourse = asyncHandler(async (req: AuthRequest, res: Response)
     throw new AppError("No valid fields provided for update", 400);
   }
 
-  const course = await Course.findOneAndUpdate(
+  const courseQuery = await Course.findOneAndUpdate(
     {
       _id: req.params.id,
       instructor: req.user.id
     },
     { $set: updates },
     { new: true, runValidators: true }
-  );
+  ) as any;
+
+  courseQuery._skipIsPublishedCheck = true;
+
+  const course = await courseQuery;
 
   if (!course) {
     throw new AppError("Course not found or not authorized", 404);
@@ -68,7 +72,7 @@ export const updateCourse = asyncHandler(async (req: AuthRequest, res: Response)
 
 
 export const getAllCourses = asyncHandler(async (req: Request, res: Response) => {
-  const courses = await Course.find({ isPublished: true }).populate("instructor", "firstName lastName");
+  const courses = await Course.find().populate("instructor", "firstName lastName");
   res.status(200).json({
     success: true,
     length: courses.length,
@@ -77,7 +81,7 @@ export const getAllCourses = asyncHandler(async (req: Request, res: Response) =>
 });
 
 export const getCourseById = asyncHandler(async (req: Request, res: Response) => {
-  const course = await Course.findOne({ _id: req.params.id, isPublished: true })
+  const course = await Course.findById(req.params.id)
     .populate("instructor", "fistName lastName profilePic")
     .populate("sections");
 
@@ -90,12 +94,15 @@ export const getCourseById = asyncHandler(async (req: Request, res: Response) =>
 
 // Get all courses by an instructor
 export const getInstructorCourses = asyncHandler(async (req: Request, res: Response) => {
-  const courses = await Course.find({ instructor: req.params.instructorId, isPublished: true });
+  const courses = await Course.find({ instructor: req.params.instructorId });
   res.status(200).json({ success: true, length: courses.length, courses });
 });
 
 export const publishCourse = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const course = await Course.findById(req.params.id);
+  const courseQuery = Course.findById(req.params.id);
+  (courseQuery as any)._skipIsPublishedCheck = true;
+
+  const course = await courseQuery;
 
   if (!course) {
     throw new AppError("Course not found", 404);
