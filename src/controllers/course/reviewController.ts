@@ -4,6 +4,7 @@ import Review from "../../models/Course/ReviewModel";
 import Course from "../../models/Course/CourseModel";
 import User from "../../models/User/UserModel";
 import { AuthRequest } from "../../types/authRequest";
+import AppError from "../../utils/AppError";
 
 
 export const createReview = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -64,3 +65,32 @@ export const updateReview = asyncHandler(async (req: AuthRequest, res: Response)
   res.status(200).json({ message: "Review updated successfully", review });
 });
 
+export const getCourseReviews = asyncHandler(async (req: Request, res: Response) => {
+  const { courseId } = req.params;
+
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const course = await Course.findById(courseId);
+  if (!course) throw new AppError("Course not found", 404);
+
+
+  const totalReviews = course.totalReviews;
+  const totalPages = Math.ceil(totalReviews / limit);
+
+
+  const reviews = await Review.find({ course: courseId })
+    .populate("user", "fullName")
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  res.status(200).json({
+    success: true,
+    currentPage: page,
+    totalPages,
+    totalReviews,
+    reviews,
+  });
+});

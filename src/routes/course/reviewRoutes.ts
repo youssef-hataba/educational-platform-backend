@@ -1,5 +1,5 @@
 import express from "express";
-import { createReview, updateReview } from "../../controllers/course/reviewController";
+import { createReview, getCourseReviews, updateReview } from "../../controllers/course/reviewController";
 import { protect } from "../../middlewares/authMiddleware";
 
 const router = express.Router();
@@ -10,7 +10,7 @@ router.post("/course/:courseId", createReview);
 
 router.patch("/:reviewId", updateReview);
 
-// router.get("/course/:courseId", getReviewsByCourse);
+router.get("/course/:courseId", getCourseReviews);
 
 // router.patch("/course/:courseId", getReviewsByCourse);
 
