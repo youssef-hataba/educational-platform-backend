@@ -5,6 +5,7 @@ import Course from "../../models/Course/CourseModel";
 import User from "../../models/User/UserModel";
 import { AuthRequest } from "../../types/authRequest";
 import AppError from "../../utils/AppError";
+import Enrollment from "../../models/EnrollmentModle";
 
 
 export const createReview = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -15,6 +16,16 @@ export const createReview = asyncHandler(async (req: AuthRequest, res: Response)
   const course = await Course.findById(courseId);
   if (!course) {
     return res.status(404).json({ message: "Course not found" });
+  }
+
+  const enrollment = await Enrollment.findOne({
+    user:userId,
+    course:courseId,
+  });
+
+  // Check if the user is enrolled in the course
+  if(!enrollment){
+    return res.status(403).json({ message: "You must enroll in the course to review it" });
   }
 
   // Check if the user has already reviewed the course
