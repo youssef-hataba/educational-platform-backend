@@ -6,6 +6,7 @@ import AppError from "../utils/AppError";
 
 // Send JWT in Cookie
 const sendToken = (res: Response, user: any, statusCode: number) => {
+  const { password, role, ...safeUser } = user.toObject();
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET as string, {
     expiresIn: "30d",
   });
@@ -22,13 +23,7 @@ const sendToken = (res: Response, user: any, statusCode: number) => {
     .cookie("token", token, cookieOptions)
     .json({
       message: statusCode === 200 ? "Login successful" : "User registered successfully",
-      user: {
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        enrolledCourses: user.enrolledCourses,
-      },
+      user:safeUser,
     });
 };
 

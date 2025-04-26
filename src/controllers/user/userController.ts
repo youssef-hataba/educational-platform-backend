@@ -5,7 +5,7 @@ import AppError from "../../utils/AppError";
 import { AuthRequest } from "../../types/authRequest";
 
 export const getUserProfile = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const user = await User.findById(req.user.id).select("firstName lastName email enrolledCourses profilePic");
+  const user = await User.findById(req.user.id).select("-password -__v -role");
   if (!user) {
     throw new AppError("User not found", 404);
   }
