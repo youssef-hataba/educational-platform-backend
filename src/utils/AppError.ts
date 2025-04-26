@@ -21,7 +21,9 @@ class AppError extends Error {
      * This ensures the error message starts from where it was actually thrown,
      * making debugging easier.
      */
-    Error.captureStackTrace(this, this.constructor);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
   }
 }
 
