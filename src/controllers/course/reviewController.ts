@@ -6,6 +6,7 @@ import User from "../../models/User/UserModel";
 import { AuthRequest } from "../../types/authRequest";
 import AppError from "../../utils/AppError";
 import Enrollment from "../../models/EnrollmentModle";
+import mongoose from "mongoose";
 
 
 export const createReview = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -25,7 +26,7 @@ export const createReview = asyncHandler(async (req: AuthRequest, res: Response)
 
   // Check if the user is enrolled in the course
   if (!enrollment) {
-    throw new AppError("You must be enrolled in the course to leave a review", 403);  
+    throw new AppError("You must be enrolled in the course to leave a review", 403);
   }
 
   // Check if the user has already reviewed the course
@@ -76,36 +77,6 @@ export const updateReview = asyncHandler(async (req: AuthRequest, res: Response)
   res.status(200).json({ message: "Review updated successfully", review });
 });
 
-export const getCourseReviews = asyncHandler(async (req: Request, res: Response) => {
-  const { courseId } = req.params;
-
-  const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
-
-  const course = await Course.findById(courseId);
-  if (!course) throw new AppError("Course not found", 404);
-
-
-  const totalReviews = course.totalReviews;
-  const totalPages = Math.ceil(totalReviews / limit);
-
-
-  const reviews = await Review.find({ course: courseId })
-    .populate("user", "fullName")
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: -1 });
-
-  res.status(200).json({
-    success: true,
-    currentPage: page,
-    totalPages,
-    totalReviews,
-    reviews,
-  });
-});
-
 export const deleteReview = asyncHandler(async (req: AuthRequest, res: Response) => {
   const { courseId } = req.params;
   const userId = req.user.id;
@@ -129,5 +100,80 @@ export const deleteReview = asyncHandler(async (req: AuthRequest, res: Response)
   }
 
   res.status(200).json({ message: "Review deleted successfully" });
+});
+
+export const getCourseReviews = asyncHandler(async (req: Request, res: Response) => {
+  const { courseId } = req.params;
+  const { search, stars } = req.query;
+
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const course = await Course.findById(courseId);
+  if (!course) throw new AppError("Course not found", 404);
+
+  const filter: any = { course: courseId };
+
+  // filter by number of stars
+  if (stars) {
+    filter.rating = Number(stars);
+  }
+
+  // search by comment
+  if (search) {
+    filter.comment = { $regex: search, $options: "i" };
+  }
+
+  const totalReviews = await Review.countDocuments(filter);
+  const totalPages = Math.ceil(totalReviews / limit);
+
+  const reviews = await Review.find(filter)
+    .populate("user", "fullName")
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  res.status(200).json({
+    success: true,
+    currentPage: page,
+    totalPages,
+    totalReviews,
+    reviews,
+  });
+});
+
+export const getRatingDistribution = asyncHandler(async (req: Request, res: Response) => {
+  const { courseId } = req.params;
+
+  const course = await Course.findById(courseId);
+  if (!course) throw new AppError("Course not found", 404);
+
+  const distribution = await Review.aggregate([
+    { $match: { course: new mongoose.Types.ObjectId(courseId) } },
+    { $group: { _id: "$rating", count: { $sum: 1 } } },
+    { $sort: { _id: -1 } }
+  ]);
+
+  const totalReviews = distribution.reduce((acc, item) => acc + item.count, 0);
+
+  const percentages: Record<number, number> = {
+    5: 0,
+    4: 0,
+    3: 0,
+    2: 0,
+    1: 0,
+  };
+
+  distribution.forEach(item => {
+    percentages[item._id] = parseFloat(((item.count / totalReviews) * 100).toFixed(2));
+  });
+
+  res.status(200).json({
+    success: true,
+    totalReviews,
+    averageRating: course.averageRating,
+    percentages
+  });
 });
 
