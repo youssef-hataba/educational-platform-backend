@@ -3,10 +3,12 @@ import asyncHandler from "../../middlewares/asyncHandler";
 import Course from "../../models/Course/CourseModel";
 import AppError from "../../utils/AppError";
 import { AuthRequest } from "../../types/authRequest";
+import { applyFilters } from "../../utils/filters";
+import { getPagination } from "../../utils/pagination";
 
 
 export const createCourse = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const { title, description, price, category, tags, thumbnail, requirements, whatYouWillLearn, language } = req.body;
+  const { title, description, price, category, tags, thumbnail, requirements, whatYouWillLearn, language, level } = req.body;
   const instructorId = req.user.id;
 
   const course = await Course.create({
@@ -19,6 +21,7 @@ export const createCourse = asyncHandler(async (req: AuthRequest, res: Response)
     requirements,
     whatYouWillLearn,
     language,
+    level,
     instructor: instructorId,
   });
 
@@ -70,12 +73,28 @@ export const updateCourse = asyncHandler(async (req: AuthRequest, res: Response)
   res.status(200).json({ success: true, course });
 });
 
-
 export const getAllCourses = asyncHandler(async (req: Request, res: Response) => {
-  const courses = await Course.find().populate("instructor", "firstName lastName");
+  const { page, limit, ...filters } = req.query;
+  const query: any = {};
+
+  applyFilters(query, filters);
+
+  const { pageNum, limitNum, skip } = getPagination(page as string, limit as string);
+
+  const courses = await Course.find(query)
+    .populate("instructor", "firstName lastName")
+    .skip(skip)
+    .limit(limitNum)
+    .sort({ createdAt: -1 });
+
+  const totalCourses = await Course.countDocuments(query);
+  const totalPages = Math.ceil(totalCourses / limitNum);
+
   res.status(200).json({
     success: true,
-    length: courses.length,
+    totalCourses,
+    totalPages,
+    currentPage: pageNum,
     courses
   });
 });
@@ -92,7 +111,6 @@ export const getCourseById = asyncHandler(async (req: Request, res: Response) =>
   res.status(200).json({ success: true, course });
 });
 
-// Get all courses by an instructor
 export const getInstructorCourses = asyncHandler(async (req: Request, res: Response) => {
   const courses = await Course.find({ instructor: req.params.instructorId });
   res.status(200).json({ success: true, length: courses.length, courses });

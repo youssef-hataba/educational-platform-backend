@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { CourseCategory, CourseLanguage, Level } from "../../types/course";
 
 export interface ICourse extends Document {
   title: string;
@@ -6,8 +7,9 @@ export interface ICourse extends Document {
   instructor: mongoose.Types.ObjectId;
   sections: mongoose.Types.ObjectId[];
   price: number;
-  category: string;
-  language: string[];
+  category: CourseCategory;
+  level: Level;
+  language: CourseLanguage[];
   requirements: string[];
   whatYouWillLearn: string[];
   duration: number;
@@ -36,8 +38,25 @@ const CourseSchema: Schema = new Schema<ICourse>(
       },
     ],
     price: { type: Number, required: true, default: 0 },
-    category: { type: String, required: true },
-    language: [{ type: String, required: true, default: "English" }],
+    category: { 
+      type: String, 
+      enum: Object.values(CourseCategory), 
+      required: true 
+    },
+    level: { 
+      type: String, 
+      enum: Object.values(Level), 
+      required: true, 
+      default: Level.BEGINNER 
+    },
+    language: [
+      { 
+        type: String, 
+        enum: Object.values(CourseLanguage), 
+        required: true, 
+        default: CourseLanguage.ENGLISH 
+      }
+    ],
     requirements: [{ type: String }],
     whatYouWillLearn: [{ type: String }],
     duration: { type: Number },
