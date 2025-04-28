@@ -26,3 +26,11 @@ export enum CourseLanguage {
   JAPANESE = "Japanese",
   HINDI = "Hindi",
 }
+
+
+export enum ApprovalStatus {
+  DRAFT = "draft",
+  PENDING = "pending",
+  APPROVED = "approved",
+  REJECTED = "rejected"
+}

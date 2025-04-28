@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { CourseCategory, CourseLanguage, Level } from "../../types/course";
+import { ApprovalStatus, CourseCategory, CourseLanguage, Level } from "../../types/course";
 
 export interface ICourse extends Document {
   title: string;
@@ -19,6 +19,8 @@ export interface ICourse extends Document {
   totalReviews: number;
   totalStudents: number;
   isPublished: boolean;
+  approvalStatus: ApprovalStatus;
+  rejectionReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,6 +69,12 @@ const CourseSchema: Schema = new Schema<ICourse>(
     totalReviews: { type: Number, default: 0 },
     totalStudents: { type: Number, default: 0 },
     isPublished: { type: Boolean, default: false },
+    approvalStatus: {
+      type: String,
+      enum: Object.values(ApprovalStatus),
+      default: ApprovalStatus.DRAFT
+    },
+    rejectionReason: { type: String }
   },
   { timestamps: true }
 );
