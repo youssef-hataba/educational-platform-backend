@@ -6,7 +6,8 @@ export const applyFilters = (query: any, filters: any) => {
   if (search) {
     query.$or = [
       { title: { $regex: search, $options: "i" } },
-      { description: { $regex: search, $options: "i" } }
+      { description: { $regex: search, $options: "i" } },
+      { tags: { $regex: search, $options: "i" } }
     ];
   }
 
