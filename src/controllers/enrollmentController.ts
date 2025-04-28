@@ -24,6 +24,10 @@ export const enrollInCourse = asyncHandler(async (req: AuthRequest, res: Respons
 
   const enrollment = await Enrollment.create({ user: userId, course: courseId });
 
+  // Increment totalStudents count
+  course.totalStudents += 1;
+  await course.save();
+
   res.status(201).json({ message: "Enrollment successful", enrollment });
 });
 

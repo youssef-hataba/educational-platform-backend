@@ -17,6 +17,7 @@ export interface ICourse extends Document {
   thumbnail: string;
   averageRating: number;
   totalReviews: number;
+  totalStudents: number;
   isPublished: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -38,23 +39,23 @@ const CourseSchema: Schema = new Schema<ICourse>(
       },
     ],
     price: { type: Number, required: true, default: 0 },
-    category: { 
-      type: String, 
-      enum: Object.values(CourseCategory), 
-      required: true 
+    category: {
+      type: String,
+      enum: Object.values(CourseCategory),
+      required: true
     },
-    level: { 
-      type: String, 
-      enum: Object.values(Level), 
-      required: true, 
-      default: Level.BEGINNER 
+    level: {
+      type: String,
+      enum: Object.values(Level),
+      required: true,
+      default: Level.BEGINNER
     },
     language: [
-      { 
-        type: String, 
-        enum: Object.values(CourseLanguage), 
-        required: true, 
-        default: CourseLanguage.ENGLISH 
+      {
+        type: String,
+        enum: Object.values(CourseLanguage),
+        required: true,
+        default: CourseLanguage.ENGLISH
       }
     ],
     requirements: [{ type: String }],
@@ -64,6 +65,7 @@ const CourseSchema: Schema = new Schema<ICourse>(
     thumbnail: { type: String, required: true },
     averageRating: { type: Number, default: 0 },
     totalReviews: { type: Number, default: 0 },
+    totalStudents: { type: Number, default: 0 },
     isPublished: { type: Boolean, default: false },
   },
   { timestamps: true }
