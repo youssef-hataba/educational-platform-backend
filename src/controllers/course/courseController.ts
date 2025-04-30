@@ -102,7 +102,7 @@ export const getAllCourses = asyncHandler(async (req: Request, res: Response) =>
 
 export const getCourseById = asyncHandler(async (req: Request, res: Response) => {
   const course = await Course.findById(req.params.id)
-    .populate("instructor", "fistName lastName profilePic")
+    .populate("instructor", "firstName lastName profilePic")
     .populate("sections");
 
   if (!course) {

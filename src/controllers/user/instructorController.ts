@@ -5,6 +5,7 @@ import { AuthRequest } from "../../types/authRequest";
 import AppError from "../../utils/AppError";
 import User, { UserRole } from "../../models/User/UserModel";
 import Enrollment from "../../models/EnrollmentModle";
+import Course from "../../models/Course/CourseModel";
 
 
 export const becomeInstructor = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -34,7 +35,7 @@ export const becomeInstructor = asyncHandler(async (req: AuthRequest, res: Respo
 });
 
 export const updateInstructor = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const instructorId = req.user.id; 
+  const instructorId = req.user.id;
   const { title, bio, socialLinks } = req.body;
 
   const instructor = await Instructor.findById(instructorId);
@@ -52,40 +53,30 @@ export const updateInstructor = asyncHandler(async (req: AuthRequest, res: Respo
   res.status(200).json({ message: "Instructor updated successfully", instructor });
 });
 
+export const getInstructorProfile = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
 
-// export const getInstructorProfile = asyncHandler(async (req: Request, res: Response) => {
-//   const { id } = req.params;
+  const instructor = await Instructor.findById(id).select("-__v -password");
 
-//   // Step 1: Get instructor data
-//   const instructor = await Instructor.findById(id)
-//     .populate("courses", "title price thumbnail rating totalRatings duration") // basic course info
-//     .lean();
+  const courses = await Course.find({ instructor: id });
 
-//   if (!instructor) {
-//     return res.status(404).json({ message: "Instructor not found" });
-//   }
+  if (!instructor) {
+    return res.status(404).json({ message: "Instructor not found" });
+  }
 
-//   // Step 2: Get all enrollments for instructor's courses
-//   const totalStudents = await Enrollment.countDocuments({
-//     course: { $in: instructor.courses.map((c: any) => c._id) }
-//   });
+  const totalStudents = courses.reduce((acc: number, course: any) => {
+    return acc + (course.totalStudents || 0);
+  }, 0);
 
-//   // Step 3: Sum all reviews counts from courses
-//   const totalReviews = instructor.courses.reduce((acc: number, course: any) => {
-//     return acc + (course.reviewsCount || 0);
-//   }, 0);
+  const totalReviews = courses.reduce((acc: number, course: any) => {
+    return acc + (course.totalReviews || 0);
+  }, 0);
 
-//   // Step 4: Return the final data
-//   res.status(200).json({
-//     _id: instructor._id,
-//     firstName: instructor.firstName,
-//     lastName: instructor.lastName,
-//     title: instructor.title,
-//     bio: instructor.bio,
-//     socialLinks: instructor.socialLinks,
-//     totalStudents,
-//     reviews: totalReviews,
-//     courses: instructor.courses,
-//   });
-// });
+  res.status(200).json({
+    totalStudents,
+    reviews: totalReviews,
+    instructor,
+    courses,
+  });
+});
 
